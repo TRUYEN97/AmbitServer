@@ -23,6 +23,7 @@ create table Line(
     foreign key(Product_ID) references Product(Product_ID)
 );
 
+
 create table Pc(
 	Pc_ID varchar(10),
     PcName varchar(20),
@@ -32,11 +33,20 @@ create table Pc(
     foreign key (Line_ID) references Line(Line_ID),
     foreign key (Station_ID) references Station(Station_ID)
 );
-
+drop table Pc;
 create table PN(
 	PN_ID varchar(10) primary key,
     NamePN varchar(20) not null,
     Product_ID varchar(10),
     foreign key(Product_ID) references Product(Product_ID)
+);
+
+create table Program(
+	Program_ID varchar(10),
+    ProgramName varchar(30) not null,
+    ProgramType bit not null, -- 1 simple program, 0 beta
+    PN_ID varchar(10) not null,
+    Pc_ID varchar(10) not null,
+    primary key(Program_ID, ProgramName, PN_ID)
 );
 
