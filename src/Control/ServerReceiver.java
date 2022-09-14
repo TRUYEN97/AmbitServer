@@ -7,9 +7,9 @@ package Control;
 import FileTool.FileService;
 import MOdel.Servicer;
 import Unicast.commons.Actions.FileTransfer;
-import Unicast.commons.Actions.ListPackage;
-import Unicast.commons.Actions.MyName;
-import Unicast.commons.Actions.ObjectPackage;
+import Unicast.commons.Actions.Object.List.ListPackage;
+import Unicast.commons.Actions.Object.MyName;
+import Unicast.commons.Actions.Object.ObjectPackage;
 import Unicast.commons.Actions.SimplePackage;
 import Unicast.commons.Enum.ACTION;
 import Unicast.commons.Interface.ISend;
@@ -44,13 +44,9 @@ public class ServerReceiver implements IObjectReceiver<SimplePackage> {
                 if (pg instanceof MyName myName) {
                     this.PCnames.put(id, myName.getPcName());
                     System.out.println(myName.getdata());
-                    this.handler.send(new ListPackage<>(ACTION.PNs, this.servicer.getListPN(this.PCnames.get(this.id))));
                 }
             }
-            case PNs -> {
-                this.handler.send(new ListPackage<>(ACTION.PNs, this.servicer.getListPN(this.PCnames.get(this.id))));
-            }
-            case UP_DATE -> {
+            case DOWN_LOAD -> {
                 if (pg instanceof ObjectPackage) {
                     String PN = ((ObjectPackage<String>) pg).getdata();
                     if (this.servicer.isHavePN(this.PCnames.get(this.id), PN)) {
