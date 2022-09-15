@@ -6,17 +6,12 @@ package Control;
 
 import FileTool.FileService;
 import MOdel.Servicer;
-import Unicast.commons.Actions.FileTransfer;
-import Unicast.commons.Actions.Object.List.ListPackage;
 import Unicast.commons.Actions.Object.MyName;
-import Unicast.commons.Actions.Object.ObjectPackage;
 import Unicast.commons.Actions.SimplePackage;
-import Unicast.commons.Enum.ACTION;
 import Unicast.commons.Interface.ISend;
 import java.util.Map;
 import Unicast.commons.Interface.IObjectReceiver;
-import java.io.File;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  *
@@ -47,19 +42,8 @@ public class ServerReceiver implements IObjectReceiver<SimplePackage> {
                 }
             }
             case DOWN_LOAD -> {
-                if (pg instanceof ObjectPackage) {
-                    String PN = ((ObjectPackage<String>) pg).getdata();
-                    if (this.servicer.isHavePN(this.PCnames.get(this.id), PN)) {
-                        List<String> filePaths = this.servicer.getListFile(this.PCnames.get(this.id), PN);
-                        for (String path : filePaths) {
-                            System.out.println(path);
-                            if (!new File(path).exists()) {
-                                continue;
-                            }
-                            this.handler.send(new FileTransfer(path, this.fileService.getByte(path)));
-                        }
-                    }
-                }
+                Map<String,String> files = new HashMap<>();
+//                files.put(key, value);
             }
             default -> {
             }
