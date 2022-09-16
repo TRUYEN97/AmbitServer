@@ -2,21 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package AmbitServer;
+package MOdel;
 
-import Control.Engine;
+import MOdel.Source.Setting;
+
 
 /**
  *
  * @author Administrator
  */
-public class Main {
-    public static void main(String[] args) {
-    
-        try {
-            new Engine().run();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+public class Servants {
+    private final Setting setting;
+
+    public Servants(Setting setting) {
+        this.setting = setting;
     }
 }

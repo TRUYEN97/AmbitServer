@@ -4,7 +4,7 @@
  */
 package View;
 
-import Control.Core;
+import Control.ServerRunner;
 
 /**
  *
@@ -12,13 +12,34 @@ import Control.Core;
  */
 public class Display extends javax.swing.JFrame {
 
-    private Core core;
+    private ServerRunner core;
 
     /**
      * Creates new form Display
+     *
+     * @param version
      */
-    public Display() {
+    public Display(String version) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Display.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        //</editor-fold>
         initComponents();
+        this.setTitle(String.format("AmbitServer - %s", version));
     }
 
     public void setPort(int port) {
@@ -37,7 +58,7 @@ public class Display extends javax.swing.JFrame {
         this.txtMaxClient.setText(Integer.toString(sun));
     }
 
-    public void setCore(Core core) {
+    public void setCore(ServerRunner core) {
         if (core == null) {
             return;
         }
@@ -231,35 +252,6 @@ public class Display extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Display.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            new Display().setVisible(true);
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -277,7 +269,10 @@ public class Display extends javax.swing.JFrame {
     private javax.swing.JTextField txtWaitLine;
     // End of variables declaration//GEN-END:variables
 
-    public void setVersion(String version) {
-        this.setTitle(String.format("AmbitServer11 - %s", version));
+    public void display() {
+         /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> {
+            this.setVisible(true);
+        });
     }
 }

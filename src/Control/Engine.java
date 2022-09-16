@@ -4,8 +4,8 @@
  */
 package Control;
 
-import MOdel.Socket.ServerReceiver;
 import MOdel.Socket.ServerSender;
+import MOdel.Socket.ServerReceiver;
 import MOdel.Source.Setting;
 import View.Display;
 import java.io.IOException;
@@ -14,20 +14,19 @@ import java.io.IOException;
  *
  * @author Administrator
  */
-public class Core {
-
-    private final ServerRunner runner;
+public class Engine {
     private final Display display;
-    private final Setting setting;
+    private final Core core;
 
-    public Core(Display display, Setting setting) throws IOException {
-        this.runner = new ServerRunner(display, setting);
-        this.display = display;
-        this.setting = setting;
+    public Engine() throws IOException {
+        Setting setting = new Setting("Setting/setting.json");
+        this.display = new Display(setting.getVersion());
+        this.core = new Core(this.display, setting);
     }
-
+    
     public void run() {
-        new Thread(runner).start();
+        this.core.run();
+        this.display.display();
     }
     
 }

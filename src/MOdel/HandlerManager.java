@@ -4,9 +4,10 @@
  */
 package MOdel;
 
-import Control.ServerReceiver;
+import MOdel.Source.Setting;
+import MOdel.Socket.ServerReceiver;
 import Unicast.Server.ClientHandler;
-import Unicast.commons.Actions.SimplePackage;
+import Unicast.commons.Actions.simplePackage;
 import Unicast.commons.Enum.ACTION;
 import Unicast.commons.Interface.IHandlerManager;
 import java.util.ArrayList;
@@ -20,11 +21,11 @@ import java.util.concurrent.Executors;
  *
  * @author Administrator
  */
-public class HandlerManager implements IHandlerManager<SimplePackage> {
+public class HandlerManager implements IHandlerManager<simplePackage> {
 
     private final ExecutorService pool;
     private final int handlerMax;
-    private final Map<Long, ClientHandler<SimplePackage>> clientHandlers;
+    private final Map<Long, ClientHandler<simplePackage>> clientHandlers;
     private final Map<Long, String> PCnames;
     private final Setting setting;
 
@@ -52,17 +53,17 @@ public class HandlerManager implements IHandlerManager<SimplePackage> {
     }
 
     @Override
-    public void add(ClientHandler<SimplePackage> handler) {
+    public void add(ClientHandler<simplePackage> handler) {
         final long id = System.currentTimeMillis();
-        handler.setObjectAnalysis(new ServerReceiver(id, new Servicer(setting), PCnames));
-        handler.send(new SimplePackage(ACTION.WHO_ARE_U));
+        handler.setObjectAnalysis(new ServerReceiver(id, new Servants(setting), PCnames));
+        handler.send(new simplePackage(ACTION.WHO_ARE_U));
         this.clientHandlers.put(id, handler);
         this.pool.execute(handler);
     }
 
     @Override
-    public void disConnect(ClientHandler<SimplePackage> handlerName) {
-        handlerName.send(new SimplePackage(ACTION.GOOD_BYE));
+    public void disConnect(ClientHandler<simplePackage> handlerName) {
+        handlerName.send(new simplePackage(ACTION.GOOD_BYE));
         handlerName.disConnect();
         this.clientHandlers.remove(handlerName);
     }
