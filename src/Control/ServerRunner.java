@@ -5,6 +5,7 @@
 package Control;
 
 import MOdel.HandlerManager;
+import MOdel.Servants;
 import MOdel.Source.Setting;
 import Unicast.Server.Server;
 import View.Display;
@@ -16,17 +17,23 @@ import javax.swing.Timer;
  *
  * @author Administrator
  */
-public class ServerRunner implements Runnable{
+public class ServerRunner implements Runnable {
 
     private final Display display;
     private final HandlerManager handlerManager;
-    private final Server serverSocket;
+    private Server serverSocket;
     private final Timer timer;
+    private final Thread thread;
 
-    public ServerRunner(Display display, Setting setting) throws IOException {
+    public ServerRunner(Display display, Servants servants, Setting setting) {
         this.display = display;
-        this.handlerManager = new HandlerManager(setting);
-        this.serverSocket = new Server(setting.getPort(), this.handlerManager);
+        this.handlerManager = servants.getHandlerManager();
+        try {
+            this.serverSocket = new Server(setting.getPort(), this.handlerManager);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
         this.display.setPort(setting.getPort());
         this.timer = new Timer(1000, (ActionEvent e) -> {
             if (ServerRunner.this.display == null) {
@@ -36,17 +43,20 @@ public class ServerRunner implements Runnable{
             ServerRunner.this.display.showWaitLine(ServerRunner.this.handlerManager.getWaitLine());
             ServerRunner.this.display.showMaxClient(ServerRunner.this.handlerManager.getMaxClint());
         });
+        this.thread = new Thread(this);
     }
 
+    public void start() {
+        this.thread.start();
+    }
+
+    public void stop() {
+        this.thread.stop();
+    }
+
+    @Override
     public void run() {
         this.serverSocket.start();
         this.timer.start();
-        showDisplay();
-    }
-
-    private void showDisplay() {
-        java.awt.EventQueue.invokeLater(() -> {
-            this.display.setVisible(true);
-        });
     }
 }

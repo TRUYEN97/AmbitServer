@@ -4,11 +4,9 @@
  */
 package Control;
 
-import MOdel.Socket.ServerReceiver;
-import MOdel.Socket.ServerSender;
+import MOdel.Servants;
 import MOdel.Source.Setting;
 import View.Display;
-import java.io.IOException;
 
 /**
  *
@@ -17,17 +15,25 @@ import java.io.IOException;
 public class Core {
 
     private final ServerRunner runner;
+    private final Servants servants;
     private final Display display;
     private final Setting setting;
 
-    public Core(Display display, Setting setting) throws IOException {
-        this.runner = new ServerRunner(display, setting);
+    public Core(Display display, Servants servants, Setting setting) {
+        this.servants = servants;
+        this.runner = new ServerRunner(display, servants, setting);
         this.display = display;
         this.setting = setting;
     }
 
     public void run() {
-        new Thread(runner).start();
+        this.runner.start();
+        showDisplay();
     }
-    
+
+    private void showDisplay() {
+        java.awt.EventQueue.invokeLater(() -> {
+            this.display.setVisible(true);
+        });
+    }
 }

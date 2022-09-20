@@ -12,7 +12,6 @@ import Control.Engine;
  */
 public class Main {
     public static void main(String[] args) {
-    
         try {
             new Engine().run();
         } catch (Exception ex) {

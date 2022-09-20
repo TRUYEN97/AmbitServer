@@ -4,29 +4,29 @@
  */
 package Control;
 
-import MOdel.Socket.ServerSender;
-import MOdel.Socket.ServerReceiver;
+import MOdel.Servants;
 import MOdel.Source.Setting;
 import View.Display;
-import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  *
  * @author Administrator
  */
 public class Engine {
+
     private final Display display;
     private final Core core;
 
-    public Engine() throws IOException {
+    public Engine() throws SQLException {
         Setting setting = new Setting("Setting/setting.json");
         this.display = new Display(setting.getVersion());
-        this.core = new Core(this.display, setting);
+        this.core = new Core(this.display, new Servants(setting), setting);
     }
-    
+
     public void run() {
         this.core.run();
         this.display.display();
     }
-    
+
 }

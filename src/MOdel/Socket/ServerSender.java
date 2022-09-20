@@ -9,5 +9,9 @@ package MOdel.Socket;
  * @author Administrator
  */
 public class ServerSender {
+
+    public void sendMessager(String string) {
+        System.out.println(string);
+    }
     
 }

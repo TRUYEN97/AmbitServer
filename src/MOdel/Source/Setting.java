@@ -69,4 +69,16 @@ public class Setting {
     List<String> getPathFile(String pcName, String PN) {
         return this.wareHouse.getListJsonArray(PN);
     }
+
+    public String getDatabase() {
+        return getString(AllKeyword.DATA_BASE);
+    }
+
+    public String getSqlUser() {
+        return getString(AllKeyword.SQL_USER);
+    }
+
+    public String getSqlPass() {
+        return getString(AllKeyword.SQL_PASS);
+    }
 }
