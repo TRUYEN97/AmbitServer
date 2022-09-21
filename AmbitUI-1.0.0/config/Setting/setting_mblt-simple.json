@@ -15,7 +15,7 @@
         {
             "NAME": "Debug", 
             "TYPE_MODE": "Debug",
-            "AMBIT_CONFIG": "config\\Item\\mbltLoopTestOnOffConfig.json",
+            "AMBIT_CONFIG": "config\\Item\\MBLT_Config.json",
             "DETAIL": ["TabViewProxy", "TabItemProxy"]
         }
     ]

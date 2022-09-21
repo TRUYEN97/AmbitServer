@@ -4,14 +4,22 @@
  */
 package MOdel.Socket;
 
+import MOdel.HandlerManager;
+
 /**
  *
  * @author Administrator
  */
 public class ServerSender {
 
-    public void sendMessager(String string) {
+    private final HandlerManager handlerManager;
+
+    public ServerSender(HandlerManager handlerManager) {
+        this.handlerManager = handlerManager;
+    }
+
+    public void sendMessager(long id, String string) {
         System.out.println(string);
     }
-    
+
 }

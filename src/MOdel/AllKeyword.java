@@ -16,6 +16,7 @@ public final class AllKeyword {
     public static final String VERSION = "Version";
     public static final String SERVER_PORT = "Server port";
     public static final String MAX_HANDLER = "Thread pool";
+    public static final String MAX_WAIT= "Wait pool";
     public static final String DATA_BASE = "Data base";
     public static final String SQL_USER = "Sql user";
     public static final String SQL_PASS = "Sql pass";

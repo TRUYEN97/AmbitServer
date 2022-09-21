@@ -81,4 +81,8 @@ public class Setting {
     public String getSqlPass() {
         return getString(AllKeyword.SQL_PASS);
     }
+
+    public int getWaitMax() {
+        return getInteger(AllKeyword.MAX_WAIT);
+    }
 }

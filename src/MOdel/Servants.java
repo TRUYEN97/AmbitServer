@@ -24,7 +24,7 @@ public class Servants {
     public Servants(Setting setting) {
         this.setting = setting;
         this.handlerManager = new HandlerManager(setting, this);
-        this.sender = new ServerSender();
+        this.sender = new ServerSender( this.handlerManager);
         this.sqlExecute = new SqlExecute(setting);
     }
 
@@ -44,7 +44,7 @@ public class Servants {
             }
             this.handlerManager.setIdentity(id,newId, myName);
         } else {
-            this.sender.sendMessager(String.format("%s not set in server!", myName.getPcName()));
+            this.sender.sendMessager(id, String.format("%s not set in server!", myName.getPcName()));
         }
     }
 

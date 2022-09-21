@@ -1,5 +1,5 @@
 {
-    "station_type": "onoff",
+    "station_type": "MBLT",
     "ROW": 1,
     "COLUMN": 1,
     "LOOP_TEST": 1,
@@ -15,7 +15,7 @@
         {
             "NAME": "Openshort", 
             "TYPE_MODE": "Production",
-            "AMBIT_CONFIG": "config\\Item\\runinoOnOffConfig.json",
+            "AMBIT_CONFIG": "config\\Item\\mbltLoopTestOnOffConfig.json",
             "DETAIL": ["TabViewProxy", "TabItemProxy"]
         }
     ]

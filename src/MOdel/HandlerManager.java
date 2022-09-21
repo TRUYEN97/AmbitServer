@@ -32,6 +32,7 @@ public class HandlerManager implements IHandlerManager<simplePackage> {
 
     private final ExecutorService pool;
     private final int handlerMax;
+    private final int waitMax;
     private final Queue<handlerCover> waitAccept;
     private final Map<Long, handlerCover> clientHandlers;
     private final Servants servants;
@@ -39,11 +40,12 @@ public class HandlerManager implements IHandlerManager<simplePackage> {
 
     public HandlerManager(Setting setting, Servants servants) {
         this.handlerMax = setting.getHandlerMax();
+        this.waitMax = setting.getWaitMax();
         this.pool = Executors.newFixedThreadPool(handlerMax);
         this.waitAccept = new LinkedList<>();
         this.clientHandlers = new HashMap<>();
         this.servants = servants;
-        this.timer = new Timer(1000, (ActionEvent e) -> {
+        this.timer = new Timer(500, (ActionEvent e) -> {
             handlerCover cover;
             synchronized (HandlerManager.this.waitAccept) {
                 if (HandlerManager.this.waitAccept.isEmpty() || (cover = HandlerManager.this.waitAccept.poll()) == null) {
