@@ -17,11 +17,13 @@ public class Engine {
 
     private final Display display;
     private final Core core;
+    private final Servants servants;
 
     public Engine() throws SQLException {
         Setting setting = new Setting("Setting/setting.json");
-        this.display = new Display(setting.getVersion());
-        this.core = new Core(this.display, new Servants(setting), setting);
+        this.servants = new Servants(setting);
+        this.display = new Display(setting.getVersion(), servants);
+        this.core = new Core(this.display, servants, setting);
     }
 
     public void run() {

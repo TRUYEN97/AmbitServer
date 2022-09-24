@@ -5,6 +5,7 @@ create table Location(
     Product varchar(10) not null,
     Station varchar(10) not null,
     Line varchar(10) not null,
+    CreateTime datetime not null default CURRENT_TIMESTAMP, 
     primary key(Localtion_ID, Product, Station, Line)
 );
 
@@ -12,10 +13,19 @@ create table Pc(
 	Pc_ID int auto_increment not null,
     PcName varchar(20) not null,
     Localtion_ID int not null,
-    PcOS varchar(20),
-    PcInfo json,
+    CreateTime datetime default CURRENT_TIMESTAMP,
     primary key (Pc_ID, PcName),
     foreign key(Localtion_ID) references Location(Localtion_ID)
+);
+
+create table PcInformation(
+	Pc_ID int not null,
+    PcOS varchar(20),
+    PcInfo json,
+    IsOnline bit not null default 0,
+    updateTime datetime default CURRENT_TIMESTAMP, 
+    primary key (Pc_ID),
+    foreign key(Pc_ID) references pc(Pc_ID)
 );
 
 create table Program(

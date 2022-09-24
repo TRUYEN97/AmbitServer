@@ -13,7 +13,6 @@ import Unicast.commons.Actions.simplePackage;
 import Unicast.commons.Enum.ACTION;
 import Unicast.commons.Interface.IHandlerManager;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -45,7 +44,7 @@ public class HandlerManager implements IHandlerManager<simplePackage> {
         this.waitAccept = new LinkedList<>();
         this.clientHandlers = new HashMap<>();
         this.servants = servants;
-        this.timer = new Timer(500, (ActionEvent e) -> {
+        this.timer = new Timer(2000, (ActionEvent e) -> {
             handlerCover cover;
             synchronized (HandlerManager.this.waitAccept) {
                 if (HandlerManager.this.waitAccept.isEmpty() || (cover = HandlerManager.this.waitAccept.poll()) == null) {
@@ -133,8 +132,8 @@ public class HandlerManager implements IHandlerManager<simplePackage> {
     }
    
 
-    void setIdentity(long waitId, long newID, MyName myName) {
-        handlerCover cover = getWaitAccept(waitId);
+    public void setIdentity(long waitId, long newID, MyName myName) {
+        handlerCover cover = takeOutWaitAccept(waitId);
         if (cover == null) {
             return;
         }
@@ -142,7 +141,7 @@ public class HandlerManager implements IHandlerManager<simplePackage> {
         this.clientHandlers.put(newID, cover);
     }
 
-    handlerCover getWaitAccept(long id) {
+    public handlerCover takeOutWaitAccept(long id) {
         for (handlerCover cover : waitAccept) {
             if (cover.getId() == id) {
                 waitAccept.remove(cover);
@@ -150,6 +149,23 @@ public class HandlerManager implements IHandlerManager<simplePackage> {
             }
         }
         return null;
+    }
+    
+    public boolean getWaitAccept(handlerCover cover) {
+        return waitAccept.remove(cover);
+    }
+    
+    public handlerCover getWaitAccept(long id) {
+        for (handlerCover cover : waitAccept) {
+            if (cover.getId() == id) {
+                return cover;
+            }
+        }
+        return null;
+    }
+
+    public handlerCover getHandler(long id) {
+        return this.clientHandlers.get(id);
     }
 
 }

@@ -10,7 +10,6 @@ import MOdel.Source.Setting;
 import Unicast.Server.Server;
 import View.Display;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import javax.swing.Timer;
 
 /**

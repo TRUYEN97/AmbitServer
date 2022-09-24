@@ -9,6 +9,7 @@ import MOdel.Socket.ServerSender;
 import MOdel.Source.Setting;
 import MOdel.Sql.SqlExecute;
 import Unicast.commons.Actions.Object.MyName;
+import java.util.List;
 
 /**
  *
@@ -42,13 +43,31 @@ public class Servants {
             if (newId < 0) {
                 return;
             }
+            this.sqlExecute.setPcInfomation(id, myName);
+            this.sqlExecute.setPcStatus(id, true);
             this.handlerManager.setIdentity(id,newId, myName);
         } else {
-            this.sender.sendMessager(id, String.format("%s not set in server!", myName.getPcName()));
+            this.sender.sendNotSetPC(id, myName);
         }
     }
 
     public void updateProgram(long id) {
+    }
+
+    public List<String> getListProduct() {
+        return this.sqlExecute.getListProduct();
+    }
+
+    public List<String> getListStation(String productName) {
+        return this.sqlExecute.getListStatus(productName);
+    }
+
+    public List<String> getListLine(String productName) {
+        return this.sqlExecute.getListLines(productName); 
+    }
+
+    public List<String> getListPcOnline(String product, String Station, String line) {
+        return this.sqlExecute.getListPcOnline(product, Station, line);
     }
 
 }
