@@ -13,6 +13,7 @@ create table Pc(
 	Pc_ID int auto_increment not null,
     PcName varchar(20) not null,
     Localtion_ID int not null,
+    IsOnline bit not null default 0,
     CreateTime datetime default CURRENT_TIMESTAMP,
     primary key (Pc_ID, PcName),
     foreign key(Localtion_ID) references Location(Localtion_ID)
@@ -22,7 +23,6 @@ create table PcInformation(
 	Pc_ID int not null,
     PcOS varchar(20),
     PcInfo json,
-    IsOnline bit not null default 0,
     updateTime datetime default CURRENT_TIMESTAMP, 
     primary key (Pc_ID),
     foreign key(Pc_ID) references pc(Pc_ID)
@@ -38,25 +38,9 @@ create table Program(
     primary key(Program_ID, programName)
 );
 
-create table Pn(
-	PN_ID int auto_increment,
-    PnName varchar(20),
-    PnCode varchar(10),
-    CreateTime datetime,
-    primary key(PN_ID, PnName)
-);
-
-create table LocaltionBackage(
-	LBG_ID int auto_increment not null,
-    LBG_NAME varchar(20),
-    PN_ID int not null,
-    primary key(LBG_ID, LBG_NAME),
-    foreign key(PN_ID) references Pn(PN_ID)
-);
-
 CREATE TABLE BackageProgram(
-	LBG_ID int not null,
+	Localtion_ID int not null,
     Program_ID int not null,
-    foreign key(LBG_ID) references LocaltionBackage(LBG_ID),
+    foreign key(Localtion_ID) references Location(Localtion_ID),
     foreign key(Program_ID) references Program(Program_ID)
 );

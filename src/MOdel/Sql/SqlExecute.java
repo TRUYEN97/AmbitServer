@@ -21,6 +21,8 @@ import java.util.List;
 public class SqlExecute {
 
     private final Setting setting;
+    public static final int ON =1;
+    public static final int OFF =0;
 
     public SqlExecute(Setting setting) {
         this.setting = setting;
@@ -150,19 +152,37 @@ public class SqlExecute {
         }
     }
 
-    public boolean setPcInfomation(long id, MyName myName) {
+    public boolean setPcStatus(String id, int stt) {
         try ( Connection conn = getConnection()) {
             return execute(conn,
-                    String.format("call setPcInfomation('%s','%s','%s')",
-                            id, myName.getOS(), new JSONObject(myName.getdata())));
+                    String.format("call setPcStatus('%s','%s')",
+                            id, stt));
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public void setPcStatus(long id, boolean b) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean isPcNameExistsInServer(String pcName) {
+         try ( Connection conn = getConnection()) {
+            ResultSet resultSet = executeQuery(conn,
+                    String.format("call setPcStatus('%s')",pcName));
+            return resultSet != null && resultSet.next() && resultSet.getInt(0) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } 
+    }
+    
+    public boolean updatePcInfo(MyName myName) {
+        try ( Connection conn = getConnection()) {
+            return execute(conn,
+                    String.format("call setPcInfomation('%s','%s','%s')",
+                            myName.getPcName(), myName.getOS(), new JSONObject(myName.getdata())));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

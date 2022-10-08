@@ -28,12 +28,5 @@ public class Core {
 
     public void run() {
         this.runner.start();
-        showDisplay();
-    }
-
-    private void showDisplay() {
-        java.awt.EventQueue.invokeLater(() -> {
-            this.display.setVisible(true);
-        });
     }
 }

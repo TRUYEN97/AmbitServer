@@ -40,7 +40,7 @@ public class ServerRunner implements Runnable {
             }
             ServerRunner.this.display.showAmountOfClients(ServerRunner.this.handlerManager.getAmountOfClients());
             ServerRunner.this.display.showWaitLine(ServerRunner.this.handlerManager.getWaitLine());
-            ServerRunner.this.display.showMaxClient(ServerRunner.this.handlerManager.getMaxClint());
+            ServerRunner.this.display.showMaxClient(ServerRunner.this.handlerManager.getMaxClient());
         });
         this.thread = new Thread(this);
     }

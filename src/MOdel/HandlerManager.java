@@ -4,24 +4,13 @@
  */
 package MOdel;
 
-import MOdel.Socket.ServerReceiver;
-import MOdel.Socket.handlerCover;
 import MOdel.Source.Setting;
 import Unicast.Server.ClientHandler;
-import Unicast.commons.Actions.Object.MyName;
 import Unicast.commons.Actions.simplePackage;
-import Unicast.commons.Enum.ACTION;
 import Unicast.commons.Interface.IHandlerManager;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.swing.Timer;
 
 /**
  *
@@ -32,28 +21,17 @@ public class HandlerManager implements IHandlerManager<simplePackage> {
     private final ExecutorService pool;
     private final int handlerMax;
     private final int waitMax;
-    private final Queue<handlerCover> waitAccept;
-    private final Map<Long, handlerCover> clientHandlers;
+    private final OnlineNumble onlineNumble;
     private final Servants servants;
-    private final Timer timer;
+    private final WaitAccept waitAccept;
 
     public HandlerManager(Setting setting, Servants servants) {
         this.handlerMax = setting.getHandlerMax();
         this.waitMax = setting.getWaitMax();
         this.pool = Executors.newFixedThreadPool(handlerMax);
-        this.waitAccept = new LinkedList<>();
-        this.clientHandlers = new HashMap<>();
+        this.waitAccept = new WaitAccept(servants, waitMax);
+        this.onlineNumble = new OnlineNumble();
         this.servants = servants;
-        this.timer = new Timer(2000, (ActionEvent e) -> {
-            handlerCover cover;
-            synchronized (HandlerManager.this.waitAccept) {
-                if (HandlerManager.this.waitAccept.isEmpty() || (cover = HandlerManager.this.waitAccept.poll()) == null) {
-                    HandlerManager.this.timer.stop();
-                    return;
-                }
-                cover.getHandler().disConnect();
-            }
-        });
     }
 
     @Override
@@ -61,111 +39,59 @@ public class HandlerManager implements IHandlerManager<simplePackage> {
         this.pool.shutdown();
     }
 
-    @Override
     public List<Runnable> shutdownNow() {
         return this.pool.shutdownNow();
     }
 
-    @Override
     public boolean isShutdown() {
         return this.pool.isShutdown();
     }
 
     @Override
     public void add(ClientHandler<simplePackage> handler) {
-        long id = System.currentTimeMillis();
-        this.waitAccept.add(new handlerCover(id, handler));
-        handler.setObjectAnalysis(this.servants.getNewReceiver(id));
+        this.waitAccept.add(handler);
         this.pool.execute(handler);
-        if (!this.timer.isRunning()) {
-            this.timer.start();
-        }
     }
 
     @Override
     public void disConnect(ClientHandler<simplePackage> handlerName) {
-        handlerName.send(new simplePackage(ACTION.GOOD_BYE));
-        handlerName.disConnect();
-        List<Long> keyRemove = new ArrayList<>();
-        for (Map.Entry<Long, handlerCover> handler : clientHandlers.entrySet()) {
-            if (handler.getValue().getHandler().equals(handlerName)) {
-                keyRemove.add(handler.getKey());
-            }
-        }
-        for (Long id : keyRemove) {
-            this.clientHandlers.remove(id);
-        }
+        this.onlineNumble.disconnect(handlerName);
     }
 
     @Override
-    public boolean disConnect(long ID) {
-        if (ID < 0 | ID >= this.clientHandlers.size()) {
-            return false;
-        }
-        this.clientHandlers.get(ID).getHandler().disConnect();
-        this.clientHandlers.remove(ID);
-        return true;
+    public void disConnect(String pcName) {
+       this.onlineNumble.disconnect(pcName);
     }
 
     @Override
     public void disConnectAll() {
-        for (handlerCover cover : clientHandlers.values()) {
-            cover.getHandler().disConnect();
-        }
-        this.clientHandlers.clear();
+        this.onlineNumble.disConnectAll();
     }
-
-    @Override
+    
     public synchronized int getAmountOfClients() {
-        return this.clientHandlers.size();
+        return this.onlineNumble.size() - this.handlerMax;
     }
 
-    @Override
-    public synchronized int getMaxClint() {
+    public synchronized int getMaxClient() {
         return this.handlerMax;
     }
 
-    @Override
     public synchronized int getWaitLine() {
-        int num = this.clientHandlers.size() - this.handlerMax;
+        int num = getAmountOfClients() - this.handlerMax;
         return num < 0 ? 0 : num;
     }
    
-
-    public void setIdentity(long waitId, long newID, MyName myName) {
-        handlerCover cover = takeOutWaitAccept(waitId);
-        if (cover == null) {
-            return;
-        }
-        cover.setMyName(myName);
-        this.clientHandlers.put(newID, cover);
-    }
-
-    public handlerCover takeOutWaitAccept(long id) {
-        for (handlerCover cover : waitAccept) {
-            if (cover.getId() == id) {
-                waitAccept.remove(cover);
-                return cover;
-            }
-        }
-        return null;
-    }
     
-    public boolean getWaitAccept(handlerCover cover) {
-        return waitAccept.remove(cover);
-    }
-    
-    public handlerCover getWaitAccept(long id) {
-        for (handlerCover cover : waitAccept) {
-            if (cover.getId() == id) {
-                return cover;
-            }
-        }
-        return null;
+    public ClientHandler<simplePackage> getWaitAccept(long id) {
+      return this.waitAccept.getClientHandler(id);
     }
 
-    public handlerCover getHandler(long id) {
-        return this.clientHandlers.get(id);
+    public boolean hasOnline(String pcName) {
+        return this.onlineNumble.hasOnline(pcName);
+    }
+
+    public void setOnline(String pcName, ClientHandler<simplePackage> handler) {
+        this.onlineNumble.setOnline(pcName, handler);
     }
 
 }

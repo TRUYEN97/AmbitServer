@@ -5,6 +5,7 @@
 package MOdel.Socket;
 
 import MOdel.Servants;
+import Unicast.Server.ClientHandler;
 import Unicast.commons.Actions.Object.MyName;
 import Unicast.commons.Actions.simplePackage;
 import Unicast.commons.Interface.IObjectReceiver;
@@ -16,10 +17,10 @@ import Unicast.commons.Interface.IObjectReceiver;
 public class ServerReceiver implements IObjectReceiver<simplePackage> {
 
     private final Servants servicer;
-    private final long id;
+    private final ClientHandler<simplePackage> handler;
 
-    public ServerReceiver(long id, Servants servicer) {
-        this.id = id;
+    public ServerReceiver(ClientHandler<simplePackage> handler, Servants servicer) {
+        this.handler = handler;
         this.servicer = servicer;
     }
 
@@ -28,7 +29,7 @@ public class ServerReceiver implements IObjectReceiver<simplePackage> {
         switch (pg.getAction()) {
             case I_AM -> {
                 if (pg instanceof MyName myName) {
-                   this.servicer.joinIn(id, myName);
+                   this.servicer.joinInOnline(this.handler, myName);
                 }
             }
             
@@ -36,7 +37,7 @@ public class ServerReceiver implements IObjectReceiver<simplePackage> {
             }
             
             case UPDATE -> {
-                this.servicer.updateProgram(id);
+                this.servicer.updateProgram(this.handler);
             }
             default -> {
             }
