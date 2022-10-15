@@ -21,8 +21,8 @@ import java.util.List;
 public class SqlExecute {
 
     private final Setting setting;
-    public static final int ON =1;
-    public static final int OFF =0;
+    public static final int ON = 1;
+    public static final int OFF = 0;
 
     public SqlExecute(Setting setting) {
         this.setting = setting;
@@ -38,27 +38,18 @@ public class SqlExecute {
         }
     }
 
-    public ResultSet executeQuery(Connection connection, String sql) {
+    public ResultSet executeQuery(Connection connection, String sql) throws SQLException {
         if (connection == null) {
             return null;
         }
-        try {
-            return connection.createStatement().executeQuery(sql);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return connection.createStatement().executeQuery(sql);
     }
-    public boolean execute(Connection connection, String sql) {
+
+    public boolean execute(Connection connection, String sql) throws SQLException {
         if (connection == null) {
             return false;
         }
-        try {
-            return connection.createStatement().execute(sql);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return connection.createStatement().execute(sql);
     }
 
     public void disConnect(Connection connection) {
@@ -164,16 +155,16 @@ public class SqlExecute {
     }
 
     public boolean isPcNameExistsInServer(String pcName) {
-         try ( Connection conn = getConnection()) {
+        try ( Connection conn = getConnection()) {
             ResultSet resultSet = executeQuery(conn,
-                    String.format("call setPcStatus('%s')",pcName));
-            return resultSet != null && resultSet.next() && resultSet.getInt(0) > 0;
+                    String.format("call isPcNameExists('%s')", pcName));
+            return resultSet != null && resultSet.next() && resultSet.getInt(1) > 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        } 
+        }
     }
-    
+
     public boolean updatePcInfo(MyName myName) {
         try ( Connection conn = getConnection()) {
             return execute(conn,
@@ -182,6 +173,18 @@ public class SqlExecute {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public String addNewPc(String pcNumble, String product, String station, String line) {
+        try ( Connection conn = getConnection()) {
+            execute(conn,
+                    String.format("call addNewPc('%s-%s','%s','%s','%s')",
+                            station, pcNumble, product, station, line));
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
         }
     }
 

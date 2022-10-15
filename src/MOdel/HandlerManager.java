@@ -69,7 +69,7 @@ public class HandlerManager implements IHandlerManager<simplePackage> {
     }
     
     public synchronized int getAmountOfClients() {
-        return this.onlineNumble.size() - this.handlerMax;
+        return this.onlineNumble.size();
     }
 
     public synchronized int getMaxClient() {

@@ -12,6 +12,7 @@ import Unicast.Server.ClientHandler;
 import Unicast.commons.Actions.Object.MyName;
 import Unicast.commons.Actions.simplePackage;
 import Unicast.commons.Interface.IObjectReceiver;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,12 +62,18 @@ public class Servants {
         return this.sqlExecute.getListLines(productName);
     }
 
-    public List<String> getListPcOnline(String product, String Station, String line) {
-        return this.sqlExecute.getListPcOnline(product, Station, line);
-    }
-
-    public void setPcOffline(String pcName) {
-        this.sqlExecute.setPcStatus(pcName, SqlExecute.OFF);
+    public List<String> getListPcOnServer(boolean onlyOnline, String product, String Station, String line) {
+        List<String> pcs = this.sqlExecute.getListPcOnline(product, Station, line);
+        if (!onlyOnline) {
+            return pcs;
+        }
+        List<String> onlinePcs = new ArrayList<>();
+        for (String pc : pcs) {
+            if (this.handlerManager.hasOnline(pc)) {
+                onlinePcs.add(pc);
+            }
+        }
+        return onlinePcs;
     }
 
     IObjectReceiver<simplePackage> getNewReceiver(ClientHandler<simplePackage> handler) {
@@ -83,6 +90,10 @@ public class Servants {
 
     public void updateProgram(ClientHandler<simplePackage> handler) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public String addNewPc(String pcNumble, String product, String station, String line) {
+        return this.sqlExecute.addNewPc(pcNumble, product, station, line);
     }
 
 }
