@@ -5,6 +5,7 @@
 package MOdel.Sql;
 
 import MOdel.Source.Setting;
+import MOdel.TableParameter;
 import Unicast.commons.Actions.Object.MyName;
 import com.alibaba.fastjson.JSONObject;
 import java.sql.Connection;
@@ -127,14 +128,14 @@ public class SqlExecute {
         }
     }
 
-    public List<String> getListPcOnline(String product, String Station, String line) {
+    public TableParameter getListPc(String product, String Station, String line) {
         try ( Connection conn = getConnection()) {
-            List<String> list = new ArrayList<>();
+            TableParameter list = new TableParameter();
             ResultSet resultSet = executeQuery(conn,
-                    String.format("call getListPcOnline('%s','%s','%s')",
+                    String.format("call getListPc('%s','%s','%s')",
                             product, Station, line));
-            while (resultSet != null && resultSet.next()) {
-                list.add(resultSet.getString(1));
+            if (resultSet != null) {
+                return getTableParamater(resultSet);
             }
             return list;
         } catch (Exception e) {
@@ -165,11 +166,11 @@ public class SqlExecute {
         }
     }
 
-    public boolean updatePcInfo(MyName myName) {
+    public boolean updatePcInfo(MyName myName, String hostAddress) {
         try ( Connection conn = getConnection()) {
             return execute(conn,
-                    String.format("call setPcInfomation('%s','%s','%s')",
-                            myName.getPcName(), myName.getOS(), new JSONObject(myName.getdata())));
+                    String.format("call setpcinfomation('%s','%s','%s','%s')",
+                            myName.getPcName(), myName.getOS(), hostAddress, new JSONObject(myName.getdata())));
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -186,6 +187,145 @@ public class SqlExecute {
             e.printStackTrace();
             return e.getMessage();
         }
+    }
+
+    public TableParameter getProject(String projectName) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            TableParameter programs = new TableParameter();
+            ResultSet resultSet = executeQuery(conn,
+                    String.format("call getProject('%s')", projectName));
+            if (resultSet != null) {
+                return getTableParamater(resultSet);
+            }
+            return programs;
+        }
+    }
+
+    public void addVersionProram(int userID, String projectName, String programName, String version, String detail) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            execute(conn,
+                    String.format("call addVersionProram('%s', '%s', '%s', '%s', '%s')",
+                            userID, projectName, programName, version, detail));
+        }
+    }
+
+    public void addVersionConfig(int userID, String projectName, String configName, String version, String description) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            execute(conn,
+                    String.format("call addVersionConfig('%s', '%s', '%s', '%s', '%s')",
+                            userID, projectName, configName, version, description));
+        }
+    }
+
+    public void addNewProject(String projectName, int userID, String programFolder) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            execute(conn,
+                    String.format("call addnewProject('%s', '%s', '%s')",
+                            projectName, userID, programFolder));
+        }
+    }
+
+    public void removeVersionProgram(String project, String programtName, String version) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            execute(conn,
+                    String.format("call removeVersionProgram('%s', '%s', '%s')",
+                            project, programtName, version));
+        }
+    }
+
+    public void mappingProjectWithPC(String pcName, String project, String program, Object defaultFolder, Object folder) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            execute(conn,
+                    String.format("call mappingProjectWithPC('%s', '%s', '%s', '%s', '%s')",
+                            pcName, project, program, 
+                            defaultFolder, folder == null ? defaultFolder : folder));
+        }
+    }
+
+    public TableParameter findAllVersions(String project) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            ResultSet resultSet = executeQuery(conn,
+                    String.format("call findAllVersions('%s')", project));
+            if (resultSet != null) {
+                return getTableParamater(resultSet);
+            }
+            return null;
+        }
+    }
+
+    public String getProgramNameOfProject(String project) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            ResultSet resultSet = executeQuery(conn,
+                    String.format("call getProgramNameOfProject('%s')", project));
+            if (resultSet != null && resultSet.next()) {
+                return resultSet.getString(1);
+            }
+            return null;
+        }
+    }
+
+    public TableParameter getListConfigOfProject(int type, String project) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            ResultSet resultSet = executeQuery(conn,
+                    String.format("call getListConfigOfProject(%s, '%s')", type, project));
+            if (resultSet != null) {
+                return getListParamater(resultSet);
+            }
+            return null;
+        }
+    }
+
+    public TableParameter getListPcMappingProject(boolean hasMapping, String projectName, String productItem, String stationItem, String lineItem) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            ResultSet resultSet = executeQuery(conn,
+                    String.format("call getListPcMappingProject(%s,'%s','%s', '%s', '%s')",
+                            hasMapping ? 1 : 0, projectName, productItem, stationItem, lineItem));
+            if (resultSet != null) {
+                return getListParamater(resultSet);
+            }
+            return null;
+        }
+    }
+
+    private TableParameter getTableParamater(ResultSet resultSet) throws SQLException {
+        TableParameter tableParam = new TableParameter();
+        var metaData = resultSet.getMetaData();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            tableParam.addColumn(metaData.getColumnLabel(i));
+        }
+        tableParam.setDataRows(getDataset(resultSet));
+        return tableParam;
+    }
+
+    private List<List<String>> getDataset(ResultSet resultSet) throws SQLException {
+        List<List<String>> rows = new ArrayList<>();
+        if (resultSet == null) {
+            return rows;
+        }
+        var metaData = resultSet.getMetaData();
+        while (resultSet.next()) {
+            int colSize = metaData.getColumnCount();
+            List<String> row = new ArrayList<>();
+            for (int i = 1; i <= colSize; i++) {
+                row.add(resultSet.getString(i));
+            }
+            rows.add(row);
+        }
+        return rows;
+    }
+
+    private TableParameter getListParamater(ResultSet resultSet) throws SQLException {
+        TableParameter tableParam = new TableParameter();
+        var metaData = resultSet.getMetaData();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            tableParam.addColumn(metaData.getColumnLabel(i));
+        }
+        while (resultSet.next()) {
+            if (metaData.getColumnCount() > 0) {
+                tableParam.addElem(resultSet.getString(1));
+            }
+        }
+        return tableParam;
     }
 
 }

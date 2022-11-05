@@ -12,28 +12,55 @@ create table Location(
 create table Pc(
     PcName varchar(20) not null,
     Location_ID int not null,
-    IsOnline bit not null default 0,
     PcOS varchar(20),
     PcInfo json,
-    updateTime datetime default CURRENT_TIMESTAMP, 
+    updateTime datetime not null, 
     CreateTime datetime default CURRENT_TIMESTAMP,
     primary key (PcName),
     foreign key(Location_ID) references Location(Location_ID)
 );
 
+create table Project(
+	Project_ID varchar(20) not null,
+    ProgramVersion varchar(10) not null,
+    User_ID int,
+    createTime datetime not null,
+    ProgramPath varchar(200) not null,
+    primary key(project_ID)
+);
+
 create table Program(
 	Program_ID int auto_increment not null,
+    Project_ID varchar(20) not null,
     programName varchar(20) not null,
     ProgramVersion varchar(10) not null,
     User_ID int,
     UpTime datetime not null,
-    ProgramPath varchar(200) not null,
-    primary key(Program_ID, programName)
+    foreign key(Project_ID) references Project(Project_ID),
+    primary key(Program_ID)
 );
 
-CREATE TABLE BackageProgram(
-	Location_ID int not null,
-    Program_ID int not null,
-    foreign key(Location_ID) references Location(Location_ID),
-    foreign key(Program_ID) references Program(Program_ID)
+create table config(
+	config_ID int auto_increment not null,
+    Project_ID varchar(20) not null,
+    configName varchar(20) not null,
+    configVersion varchar(10) not null,
+    User_ID int,
+    UpTime datetime not null,
+    foreign key(Project_ID) references Project(Project_ID),
+    primary key(config_ID)
 );
+
+CREATE TABLE packageProgram(
+	pg_ID int auto_increment not null,
+	PcName varchar(20) not null,
+    Project_ID varchar(20) not null,
+    ProgramName varchar(20) not null,
+    defaultconfigName varchar(20) not null,
+    configName varchar(20) not null,
+    foreign key(PcName) references pc(PcName),
+    foreign key(project_ID) references project(project_ID),
+    primary key(pg_ID)
+);
+
+

@@ -1,9 +1,0 @@
-{
-    "Version": "1.0.0 - beta",
-    "Thread pool": 4,
-    "Wait pool": 4,
-    "Server port": 6200,
-    "Data base": "jdbc:mysql://localhost:3306/programmanagement",
-    "Sql user": "root",
-    "Sql pass": "Asd123456"
-}

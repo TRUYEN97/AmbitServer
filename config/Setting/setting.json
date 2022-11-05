@@ -1,0 +1,15 @@
+{
+    "Version": "1.0.0 - beta",
+    "Thread pool": 4,
+    "Wait pool": 4,
+    "Server port": 6200,
+    "Data base": "jdbc:mysql://localhost:3306/programmanagement",
+    "Sql user": "root",
+    "Sql pass": "Asd123456",
+    "Icon": "config\\Icon\\icon.png",
+    "Program": "App/Program",
+    "Ftp_host": "10.90.100.177",
+    "Ftp_port": "21",
+    "Ftp_user": "admin",
+    "Ftp_pass": "Foxconn168!!"
+}

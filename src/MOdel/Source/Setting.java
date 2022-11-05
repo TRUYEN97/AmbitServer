@@ -17,13 +17,27 @@ import java.util.List;
  */
 public class Setting {
 
+    private static volatile Setting instance;
     private final DataWareHouse wareHouse;
     private final FileService fileService;
 
-    public Setting(String path) {
+    private Setting() {
         this.wareHouse = new DataWareHouse();
         this.fileService = new FileService();
-        init(new File(path));
+        init(new File("config/Setting/setting.json"));
+    }
+
+    public static Setting getInstance() {
+        Setting ins = Setting.instance;
+        if (ins == null) {
+            synchronized (Setting.class) {
+                ins = Setting.instance;
+                if (Setting.instance == null) {
+                    Setting.instance = ins = new Setting();
+                }
+            }
+        }
+        return ins;
     }
 
     private void init(File file) {
@@ -84,5 +98,29 @@ public class Setting {
 
     public int getWaitMax() {
         return getInteger(AllKeyword.MAX_WAIT);
+    }
+
+    public String getIcon() {
+        return getString(AllKeyword.ICON);
+    }
+
+    public String getProgramFolder() {
+        return getString(AllKeyword.PROGRAMS_PATH);
+    }
+
+    public String getFtpHost() {
+        return getString(AllKeyword.FTP.HOST);
+    }
+
+    public int getFtpPort() {
+        return getInteger(AllKeyword.FTP.PORT);
+    }
+
+    public String getFtpUser() {
+        return getString(AllKeyword.FTP.USER);
+    }
+
+    public String getFtpPass() {
+        return getString(AllKeyword.FTP.PASS);
     }
 }

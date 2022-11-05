@@ -4,7 +4,11 @@
  */
 package View;
 
+import View.Program.Program;
+import View.ConfigStation.PcConfigTab;
 import MOdel.Servants;
+import MOdel.Source.Setting;
+import java.awt.Toolkit;
 
 /**
  *
@@ -13,7 +17,6 @@ import MOdel.Servants;
 public class Display extends javax.swing.JFrame {
 
     private final Servants servants;
-    private final OnlineTab onlineTab;
     private final PcConfigTab configTab;
     private final Program program;
 
@@ -46,10 +49,9 @@ public class Display extends javax.swing.JFrame {
         this.setTitle(String.format("AmbitServer - %s", version));
         this.servants = servants;
         this.configTab = new PcConfigTab(servants);
-        this.onlineTab = new OnlineTab(servants);
         this.program = new Program(servants);
         initComponents();
-        this.tabTable.addTab("Online", this.onlineTab);
+        this.setIconImage(Toolkit.getDefaultToolkit().createImage(Setting.getInstance().getIcon()));
         this.tabTable.addTab("Config", this.configTab);
         this.tabTable.addTab("Program", this.program);
     }
@@ -132,19 +134,19 @@ public class Display extends javax.swing.JFrame {
                 .addGap(14, 14, 14)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPort, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
+                .addComponent(txtPort, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtClient, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                .addComponent(txtClient, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtMaxClient, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                .addComponent(txtMaxClient, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtWaitLine, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                .addComponent(txtWaitLine, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -200,7 +202,7 @@ public class Display extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tabTable, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+                .addComponent(tabTable, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
                 .addContainerGap())
         );
 

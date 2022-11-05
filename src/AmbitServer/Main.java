@@ -20,6 +20,7 @@ public class Main {
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, ex.getLocalizedMessage());
+                System.exit(0);
             }
         });
     }
