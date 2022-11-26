@@ -4,17 +4,20 @@
  */
 package View.Program;
 
-import MOdel.Servants;
+import Control.Servants;
+import MOdel.ProgramParameter;
 import MOdel.TableModel.MyTableListModel;
-import MOdel.TableParameter;
+import Unicast.commons.Actions.TableListRowParameter;
 import View.Other.Filter;
 import View.Other.MappingProject;
+import java.awt.Cursor;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.List;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -133,7 +136,7 @@ public class Program extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnBgCreate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnBgCreate, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -141,9 +144,10 @@ public class Program extends javax.swing.JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pnBgCreate, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
+                .addComponent(pnBgCreate, javax.swing.GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pnBgCreate.add(pnInputProgram);
@@ -202,7 +206,7 @@ public class Program extends javax.swing.JPanel {
                     .addComponent(tbSearch)
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -288,7 +292,7 @@ public class Program extends javax.swing.JPanel {
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -369,24 +373,34 @@ public class Program extends javax.swing.JPanel {
             return;
         }
         this.thread = new Thread() {
+            private JComponent comp;
+
+            public Thread setComp(JComponent comp) {
+                this.comp = comp;
+                return this;
+            }
+            
             @Override
             public void run() {
                 try {
+                    this.comp.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                     var projectParameter = pnInputProgram.getProjectParameter();
                     var programParameter = pnInputProgram.getProgramParameter();
                     var configParameter = pnInputProgram.getProgramParameters();
                     servants.addNewProject(projectParameter);
                     servants.addVersionProram(programParameter);
-                    for (Servants.ConfigFolderParameter parameter : configParameter) {
+                    for (ProgramParameter parameter : configParameter) {
                         servants.addVersionConfig(parameter);
                     }
                     JOptionPane.showMessageDialog(null, "Upload ok");
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, ex.getLocalizedMessage());
+                }finally{
+                    this.comp.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 }
             }
-        };
+        }.setComp(this);
         this.thread.start();
     }//GEN-LAST:event_btnUploadActionPerformed
 
@@ -401,7 +415,7 @@ public class Program extends javax.swing.JPanel {
             keyword = "%";
         }
         try {
-            TableParameter tableProgram = this.servants.searchProject(keyword);
+            TableListRowParameter tableProgram = this.servants.searchProject(keyword);
             if (tableProgram == null) {
                 return;
             }
@@ -472,11 +486,8 @@ public class Program extends javax.swing.JPanel {
         }
         try {
             this.mapingProject.setProject(project);
-            this.mapingProject.setProgram( this.servants.getProgramNameOfProject(project));
-            this.mapingProject.setConfigs( this.servants.getListConfigOfProject(1, project).getRowElem());
-            this.mapingProject.setDefaultConfigs(this.servants.getListConfigOfProject(0, project).getRowElem());
             this.mapingProject.display();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e.getLocalizedMessage());
         }
     }

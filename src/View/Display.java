@@ -6,9 +6,10 @@ package View;
 
 import View.Program.Program;
 import View.ConfigStation.PcConfigTab;
-import MOdel.Servants;
+import Control.Servants;
 import MOdel.Source.Setting;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 
 /**
  *
@@ -26,7 +27,7 @@ public class Display extends javax.swing.JFrame {
      * @param version
      * @param servants
      */
-    public Display(String version, Servants servants) {
+    public Display() {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -45,9 +46,8 @@ public class Display extends javax.swing.JFrame {
         //</editor-fold>
 
         //</editor-fold>
-        
-        this.setTitle(String.format("AmbitServer - %s", version));
-        this.servants = servants;
+        this.servants = Servants.getInstance();
+        this.setTitle(String.format("AmbitServer - %s", Setting.getInstance().getVersion()));
         this.configTab = new PcConfigTab(servants);
         this.program = new Program(servants);
         initComponents();
@@ -93,8 +93,12 @@ public class Display extends javax.swing.JFrame {
         txtWaitLine = new javax.swing.JTextField();
         tabTable = new javax.swing.JTabbedPane();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(500, 500));
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -202,13 +206,25 @@ public class Display extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tabTable, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
+                .addComponent(tabTable, javax.swing.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        // TODO add your handling code here:
+        if (evt.isControlDown() && evt.isAltDown() && evt.getKeyCode() == KeyEvent.VK_Q) {
+            System.exit(0);
+        }
+        if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_H) {
+            this.setVisible(false);
+        } else if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_S) {
+            this.setVisible(true);
+        }
+    }//GEN-LAST:event_formKeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

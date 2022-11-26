@@ -5,7 +5,6 @@
 package Control;
 
 import MOdel.HandlerManager;
-import MOdel.Servants;
 import MOdel.Source.Setting;
 import Unicast.Server.Server;
 import View.Display;
@@ -24,16 +23,17 @@ public class ServerRunner implements Runnable {
     private final Timer timer;
     private final Thread thread;
 
-    public ServerRunner(Display display, Servants servants, Setting setting) {
+    public ServerRunner(Display display) {
         this.display = display;
-        this.handlerManager = servants.getHandlerManager();
+        this.handlerManager = new HandlerManager();
+        Servants.getInstance().setHanderManager(handlerManager);
         try {
-            this.serverSocket = new Server(setting.getPort(), this.handlerManager);
+            this.serverSocket = new Server(Setting.getInstance().getPort(), this.handlerManager);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
         }
-        this.display.setPort(setting.getPort());
+        this.display.setPort(Setting.getInstance().getPort());
         this.timer = new Timer(1000, (ActionEvent e) -> {
             if (ServerRunner.this.display == null) {
                 return;

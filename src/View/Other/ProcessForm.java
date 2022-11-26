@@ -4,6 +4,14 @@
  */
 package View.Other;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  *
  * @author Administrator
@@ -12,14 +20,26 @@ public class ProcessForm extends javax.swing.JFrame {
 
     /**
      * Creates new form ProcessForm
+     *
      * @param max
      * @param title
      */
     public ProcessForm(int max, String title) {
         initComponents();
-        this.setTitle(String.format("Upload - %s", title));
+        if (title != null && title.isBlank()) {
+            this.setTitle(String.format("Upload - %s", title));
+        }
         this.process.setStringPainted(true);
         this.process.setMaximum(max < 0 ? 0 : max);
+    }
+
+    /**
+     * Creates new form ProcessForm
+     *
+     * @param max
+     */
+    public ProcessForm(int max) {
+        this(max, null);
     }
 
     public void setValueProcessbar(int value) {
@@ -30,7 +50,8 @@ public class ProcessForm extends javax.swing.JFrame {
     public void appendLine(String line) {
         this.txtAreaList.append(String.format("%s\r\n", line));
     }
-    public boolean isCloseed(){
+
+    public boolean isCloseed() {
         return !this.isVisible();
     }
 
@@ -51,6 +72,8 @@ public class ProcessForm extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtAreaList = new javax.swing.JTextArea();
         lb_num = new javax.swing.JLabel();
+
+        setTitle("Upload");
 
         txtAreaList.setEditable(false);
         txtAreaList.setColumns(10);
@@ -89,6 +112,7 @@ public class ProcessForm extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
 
     public void display() {
         this.setVisible(true);

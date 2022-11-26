@@ -4,7 +4,7 @@
  */
 package View.Other;
 
-import MOdel.Servants;
+import Control.Servants;
 import java.awt.event.ItemEvent;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;

@@ -4,14 +4,13 @@
  */
 package View.Program;
 
-import Communicate.Cmd.Cmd;
-import FileTool.FileService;
-import MOdel.Servants;
+import Control.Servants;
+import MOdel.ProgramParameter;
 import View.TreeFolder;
+import java.awt.Color;
 import java.awt.HeadlessException;
 import java.io.File;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileSystemView;
 
 /**
  *
@@ -19,27 +18,33 @@ import javax.swing.filechooser.FileSystemView;
  */
 public class ShowConfig extends javax.swing.JPanel {
 
-    private File dirCurr;
     private final boolean isInput;
+    private final boolean isDefaultFolder;
     private final VersionChange versionChange;
     private final String name;
     private final String project;
     private final TreeFolder treeFolder;
+
     /**
      * Creates new form ShowConfig
+     *
      * @param project
      * @param name
+     * @param isDefaultFolder
      * @param isInput
      */
-    public ShowConfig(String project, String name, boolean isInput) {
+    public ShowConfig(String project, String name, boolean isDefaultFolder, boolean isInput) {
         this.project = project;
         this.isInput = isInput;
+        this.isDefaultFolder = isDefaultFolder;
         this.name = name;
         this.treeFolder = new TreeFolder();
         this.treeFolder.removeAll();
         initComponents();
         this.versionChange = new VersionChange(txtF_major, txtF_minor, txtF_patcher, txtF_revision, isInput);
-        this.dirCurr = FileSystemView.getFileSystemView().getHomeDirectory();
+        if (isDefaultFolder) {
+            this.setBackground(Color.GREEN);
+        }
     }
 
     @Override
@@ -53,30 +58,22 @@ public class ShowConfig extends javax.swing.JPanel {
         }
         this.treeFolder.setRoot(folder);
     }
-    
-    public Servants.ConfigFolderParameter getConfigParamet() throws Exception{
-        return  new Servants.ConfigFolderParameter(project, 
-                name,
-                this.versionChange.getVersion(), 
-                txtDetail.getText(), 
-                txtFilePath.getText(),
-                this.treeFolder.getAllFile());
+
+    public ProgramParameter getConfigParamet() throws Exception {
+        return new ProgramParameter().setProjectName(project)
+                .setConfigName(name).setVersion(this.versionChange.getVersion())
+                .setDescription( txtDetail.getText(), name).setFolderType(isDefaultFolder ? 0 : 1)
+                .setFolderSource(txtFilePath.getText()).setLists(this.treeFolder.getAllFile());
     }
 
     private void chosseFilePath() throws HeadlessException {
-        // TODO add your handling code here:
-        JFileChooser fc = new JFileChooser();
-        fc.setCurrentDirectory(this.dirCurr);
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fc.setDialogTitle("Select folder program");
-        int returnVal = fc.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            this.txtFilePath.setText(fc.getSelectedFile().getPath());
-            this.treeFolder.setRoot(fc.getSelectedFile());
-            this.dirCurr = fc.getCurrentDirectory();
+        JFileChooser fc = this.treeFolder.chosseFileRoot();
+        if (fc == null) {
+            return;
         }
+        this.txtFilePath.setText(fc.getSelectedFile().getPath());
+        this.treeFolder.setRoot(fc.getSelectedFile());
     }
-   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -247,8 +244,7 @@ public class ShowConfig extends javax.swing.JPanel {
         pnTree.add(this.treeFolder);
     }// </editor-fold>//GEN-END:initComponents
 
-   
-    
+
     private void txtFilePathMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtFilePathMouseClicked
         if (evt.getClickCount() < 2 || !isInput) {
             return;

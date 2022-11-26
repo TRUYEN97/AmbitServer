@@ -13,6 +13,8 @@ public final class AllKeyword {
     private AllKeyword() {
     }
 
+    public static final String TEMP_CONFIG = "Temp config";
+    public static final String TEMP_APP = "Temp app";
     public static final String VERSION = "Version";
     public static final String SERVER_PORT = "Server port";
     public static final String MAX_HANDLER = "Thread pool";
@@ -21,7 +23,9 @@ public final class AllKeyword {
     public static final String SQL_USER = "Sql user";
     public static final String ICON = "Icon";
     public static final String SQL_PASS = "Sql pass";
-    public static final String PROGRAMS_PATH = "Program";
+    public static final String FTP_PROGRAMS_PATH = "Ftp program";
+    public static final String JAVA_RUN = "Java";
+    public static final String OTHER_RUN = "Other";
 
     public static final class FTP {
 

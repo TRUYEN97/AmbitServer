@@ -4,9 +4,9 @@
  */
 package View.ConfigStation;
 
-import MOdel.Servants;
+import Control.Servants;
 import MOdel.TableModel.MyTableListModel;
-import MOdel.TableParameter;
+import Unicast.commons.Actions.TableListRowParameter;
 import View.Other.Filter;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -314,7 +314,7 @@ public class PcConfigTab extends javax.swing.JPanel {
 
     private void bt_applyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_applyActionPerformed
         // TODO add your handling code here:
-        TableParameter tableProgram = this.servants.getListPcOnServer(this.checkBoxOnline.isSelected(),
+        TableListRowParameter tableProgram = this.servants.getListPcOnServer(this.checkBoxOnline.isSelected(),
             this.showPcFilter.getProductItem(),
             this.showPcFilter.getStationItem(),
             this.showPcFilter.getLineItem());

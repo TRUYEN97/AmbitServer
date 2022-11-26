@@ -4,7 +4,7 @@
  */
 package View.Program;
 
-import MOdel.Servants;
+import Control.Servants;
 
 /**
  *

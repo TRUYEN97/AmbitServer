@@ -4,7 +4,7 @@
  */
 package View.Program;
 
-import MOdel.Servants;
+import Control.Servants;
 import MOdel.TableModel.MyTableListModel;
 import java.util.List;
 

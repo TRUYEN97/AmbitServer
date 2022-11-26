@@ -4,42 +4,43 @@
  */
 package MOdel.Socket;
 
-import MOdel.Servants;
+import Control.Servants;
 import Unicast.Server.ClientHandler;
+import Unicast.commons.AbstractClass.AbsServerReceiver;
+import Unicast.commons.Actions.MapRowsParameter;
 import Unicast.commons.Actions.Object.MyName;
+import Unicast.commons.Actions.UpdateProject;
 import Unicast.commons.Actions.simplePackage;
-import Unicast.commons.Interface.IObjectReceiver;
 
 /**
  *
  * @author Administrator
  */
-public class ServerReceiver implements IObjectReceiver<simplePackage> {
+public class ServerReceiver extends AbsServerReceiver<simplePackage> {
 
     private final Servants servicer;
-    private final ClientHandler<simplePackage> handler;
 
-    public ServerReceiver(ClientHandler<simplePackage> handler, Servants servicer) {
-        this.handler = handler;
-        this.servicer = servicer;
+    public ServerReceiver() {
+        this.servicer = Servants.getInstance();
     }
 
     @Override
-    public void receiver(simplePackage pg) {
+    public void receiver(ClientHandler<simplePackage> handler, simplePackage pg) {
         switch (pg.getAction()) {
             case I_AM -> {
                 if (pg instanceof MyName myName) {
-                   this.servicer.joinInOnline(this.handler, myName);
+                    this.servicer.updatePcInfo(myName, handler.getHostAddress());
                 }
             }
-            
-            case DOWN_LOAD -> {
+
+            case UPDATE_PROGRAM -> {
+                if (pg instanceof UpdateProject project) {
+                    this.servicer.reUpdateAllProgram(handler, project.getProjectName());
+                }
             }
-            
-            case UPDATE -> {
-                this.servicer.updateProgram(this.handler);
-            }
-            default -> {
+
+            case UPDATE_ALL_PROGRAM -> {
+                this.servicer.reUpdateAllProgram(handler, "all");
             }
         }
     }

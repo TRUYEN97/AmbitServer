@@ -4,12 +4,17 @@
  */
 package View.Program;
 
-import MOdel.Servants;
+import FileTool.FileService;
+import Control.Servants;
+import MOdel.ProgramParameter;
+import MOdel.Source.Setting;
+import View.TreeFolder;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +22,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
@@ -31,6 +37,8 @@ public class PanelProgramInfo extends javax.swing.JPanel {
     private File dirCurr;
     private final Map<String, ShowConfig> showConfigs;
     private final JPopupMenu popupMenu;
+    private final Setting setting;
+    private final TreeFolder treeSourceCode;
 
     /**
      * Creates new form PanelProgramInfo
@@ -39,6 +47,8 @@ public class PanelProgramInfo extends javax.swing.JPanel {
      */
     public PanelProgramInfo(boolean isInput) {
         this.isInput = isInput;
+        this.setting = Setting.getInstance();
+        this.treeSourceCode = new TreeFolder();
         initComponents();
         this.versionChange = new VersionChange(txtF_major, txtF_minor, txtF_patcher, txtF_revision, isInput);
         this.dirCurr = FileSystemView.getFileSystemView().getHomeDirectory();
@@ -82,6 +92,10 @@ public class PanelProgramInfo extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         txtProgram = new javax.swing.JTextField();
         txtName = new javax.swing.JTextField();
+        pnTree = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        txtCode = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
         txtProject = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -160,22 +174,42 @@ public class PanelProgramInfo extends javax.swing.JPanel {
             }
         });
 
+        pnTree.setLayout(new java.awt.BorderLayout());
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Source");
+
+        txtCode.setEditable(false);
+        txtCode.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        txtCode.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtCode.setToolTipText("");
+        txtCode.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtCodeMouseClicked(evt);
+            }
+        });
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("S code");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtProgram, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(txtF_major, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -190,7 +224,11 @@ public class PanelProgramInfo extends javax.swing.JPanel {
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(txtF_revision, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtProgram, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pnTree, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -217,7 +255,15 @@ public class PanelProgramInfo extends javax.swing.JPanel {
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                    .addComponent(txtCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -235,6 +281,7 @@ public class PanelProgramInfo extends javax.swing.JPanel {
             txtF_revision.setText("0");
         }
         txtName.setEditable(isInput);
+        pnTree.add(this.treeSourceCode);
 
         txtProject.setEditable(false);
         txtProject.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -264,7 +311,7 @@ public class PanelProgramInfo extends javax.swing.JPanel {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tabPn, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
+            .addComponent(tabPn, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -324,7 +371,7 @@ public class PanelProgramInfo extends javax.swing.JPanel {
         if (evt.getClickCount() < 2 || !isInput) {
             return;
         }
-        chosseProgramPath();
+        chosseProgramPath(this.txtProgram);
     }//GEN-LAST:event_txtProgramMouseClicked
 
     private void txtProjectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtProjectMouseClicked
@@ -339,7 +386,7 @@ public class PanelProgramInfo extends javax.swing.JPanel {
         this.setProject(project);
         clearProgram();
         clearConfig();
-        ShowConfig tabPublic = new ShowConfig(project, TAB_DEFAULT_NAME, isInput);
+        ShowConfig tabPublic = new ShowConfig(project, TAB_DEFAULT_NAME, true, isInput);
         addTabConfig(tabPublic);
     }//GEN-LAST:event_txtProjectMouseClicked
 
@@ -350,6 +397,18 @@ public class PanelProgramInfo extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tabPnMouseClicked
 
+    private void txtCodeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtCodeMouseClicked
+        // TODO add your handling code here:
+        if (evt.getClickCount() < 2 || !isInput) {
+            return;
+        }
+        JFileChooser fc = this.treeSourceCode.chosseFileRoot();
+        if (fc == null) {
+            return;
+        }
+        this.txtCode.setText(fc.getSelectedFile().getPath());
+    }//GEN-LAST:event_txtCodeMouseClicked
+
     private void showPpMenu(MouseEvent evt, JPopupMenu menu) {
         // TODO add your handling code here:
         if (evt.getButton() != MouseEvent.BUTTON3) {
@@ -358,7 +417,7 @@ public class PanelProgramInfo extends javax.swing.JPanel {
         menu.show(evt.getComponent(), evt.getX(), evt.getY());
     }
 
-    private void chosseProgramPath() throws HeadlessException {
+    private void chosseProgramPath(JTextField textField) throws HeadlessException {
         // TODO add your handling code here:
         JFileChooser fc = new JFileChooser();
         fc.setCurrentDirectory(this.dirCurr);
@@ -369,7 +428,7 @@ public class PanelProgramInfo extends javax.swing.JPanel {
         fc.setFileFilter(new FileNameExtensionFilter("Java", "jar"));
         int returnVal = fc.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            this.txtProgram.setText(fc.getSelectedFile().getPath());
+            textField.setText(fc.getSelectedFile().getPath());
             this.dirCurr = fc.getCurrentDirectory();
         }
     }
@@ -377,17 +436,21 @@ public class PanelProgramInfo extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel pnTree;
     private javax.swing.JTabbedPane tabPn;
+    private javax.swing.JTextField txtCode;
     private javax.swing.JTextArea txtDetail;
     private javax.swing.JFormattedTextField txtF_major;
     private javax.swing.JFormattedTextField txtF_minor;
@@ -397,34 +460,6 @@ public class PanelProgramInfo extends javax.swing.JPanel {
     private javax.swing.JTextField txtProgram;
     private javax.swing.JTextField txtProject;
     // End of variables declaration//GEN-END:variables
-
-    public String getProjectName() {
-        return txtProject.getText();
-    }
-
-    public String getProgramName() {
-        return txtName.getText();
-    }
-
-    public String getDetail() {
-        return txtDetail.getText();
-    }
-
-    public String getProgramFile() {
-        return txtProgram.getText();
-    }
-
-    public String getFolderSource() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public List<File> getProgramFilesConfig() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public String getVersion() {
-        return "";
-    }
 
     public void setProject(String name) {
         if (name == null) {
@@ -437,6 +472,7 @@ public class PanelProgramInfo extends javax.swing.JPanel {
         this.txtName.setText("");
         this.txtProgram.setText("");
         this.txtDetail.setText("");
+        this.treeSourceCode.clear();
     }
 
     private void clearConfig() {
@@ -460,7 +496,7 @@ public class PanelProgramInfo extends javax.swing.JPanel {
         if (name == null || !name.matches("^[a-z_A-Z]+.*$")) {
             return;
         }
-        ShowConfig newTab = new ShowConfig(txtProject.getText(), name, isInput);
+        ShowConfig newTab = new ShowConfig(txtProject.getText(), name, false, isInput);
         addTabConfig(newTab);
     }
 
@@ -477,13 +513,19 @@ public class PanelProgramInfo extends javax.swing.JPanel {
     }
     private static final String TAB_DEFAULT_NAME = "Public";
 
-    public Servants.ProgramParameter getProgramParameter() throws Exception {
-        return new Servants.ProgramParameter(txtProject.getText(), txtName.getText(),
-                versionChange.getVersion(), txtDetail.getText(), txtProgram.getText());
+    public ProgramParameter getProgramParameter() throws Exception {
+        return new ProgramParameter()
+                .setProjectName(txtProject.getText())
+                .setProgramName(createdAppName(txtProgram.getText(), txtName.getText()))
+                .setVersion(versionChange.getVersion())
+                .setDescription(txtDetail.getText(), txtName.getText())
+                .setProgramPath(txtProgram.getText())
+                .setCommandRun(createdRunFile(txtProgram.getText(), txtName.getText()))
+                .setFolderSource(txtCode.getText()).setLists(this.treeSourceCode.getAllFile());
     }
 
-    public List<Servants.ConfigFolderParameter> getProgramParameters() throws Exception {
-        List<Servants.ConfigFolderParameter> rs = new ArrayList<>();
+    public List<ProgramParameter> getProgramParameters() throws Exception {
+        List<ProgramParameter> rs = new ArrayList<>();
         for (ShowConfig config : this.showConfigs.values()) {
             rs.add(config.getConfigParamet());
         }
@@ -492,5 +534,31 @@ public class PanelProgramInfo extends javax.swing.JPanel {
 
     public Servants.ProjectParameter getProjectParameter() throws Exception {
         return new Servants.ProjectParameter(txtProject.getText(), 1);
+    }
+
+    private String createdRunFile(String path, String programName) {
+        if (path.toLowerCase().matches("^.+\\.jar$")) {
+            return String.format("%s %s.jar", this.setting.getJavaRunFile(), programName);
+        } else if (path.toLowerCase().matches("^.+\\.exe$")) {
+            return String.format("%s %s.exe", this.setting.getOtherRunFile(), programName);
+        } else if (path.toLowerCase().matches("^.+\\.py$")) {
+            return String.format("%s %s.py", this.setting.getOtherRunFile(), programName);
+        }
+        return null;
+    }
+
+    private String createdAppName(String path, String programName) {
+        if (path.toLowerCase().matches("^.+\\.jar$")) {
+            return String.format("%s.jar", programName);
+        } else if (path.toLowerCase().matches("^.+\\.exe$")) {
+            return String.format("%s.exe", programName);
+        } else if (path.toLowerCase().matches("^.+\\.py$")) {
+            return String.format("%s.py", programName);
+        }
+        return null;
+    }
+
+    private String createAppName() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

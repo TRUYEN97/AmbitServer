@@ -4,13 +4,13 @@
  */
 package View.Other;
 
-import MOdel.Servants;
-import MOdel.TableParameter;
+import Control.Servants;
+import Unicast.commons.Actions.TableListRowParameter;
+import java.awt.Cursor;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 /**
@@ -41,6 +41,7 @@ public class MappingProject extends javax.swing.JFrame {
         this.txtPragram.setText("");
         this.txtProject.setText("");
         this.cbbDefaultConfigs.removeAllItems();
+        this.cbbConfigs.removeAllItems();
         this.listPcModel.reset();
         this.listPcSelectedModel.reset();
     }
@@ -324,7 +325,7 @@ public class MappingProject extends javax.swing.JFrame {
     private void btSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSearchActionPerformed
         // TODO add your handling code here:
         try {
-            TableParameter tableProgram = this.servants.getListPcMappingProject(false, this.txtProject.getText(), this.filter.getProductItem(),
+            TableListRowParameter tableProgram = this.servants.getListPcMappingProject(false, this.txtProject.getText(), this.filter.getProductItem(),
                     this.filter.getStationItem(),
                     this.filter.getLineItem());
             if (tableProgram == null) {
@@ -346,12 +347,15 @@ public class MappingProject extends javax.swing.JFrame {
     private void btApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btApplyActionPerformed
         // TODO add your handling code here:
         try {
+            this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             for (String pcName : this.listPcSelectedModel.getAllItem()) {
-                this.servants.mappingProjectWithPC(pcName, this.txtProject.getText(), 
-                        this.txtPragram.getText(), 
+                this.servants.mappingProjectWithPC(pcName, this.txtProject.getText(),
+                        this.txtPragram.getText(),
                         this.cbbDefaultConfigs.getSelectedItem(),
                         this.cbbConfigs.getSelectedItem());
             }
+            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            this.listPcSelectedModel.reset();
             JOptionPane.showMessageDialog(null, "Map OK!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getLocalizedMessage());
@@ -410,31 +414,21 @@ public class MappingProject extends javax.swing.JFrame {
         });
     }
 
-    public void setProject(String string) {
-        this.txtProject.setText(string);
+    public void setProject(String project) throws SQLException {
+        this.txtProject.setText(project);
+        this.txtPragram.setText(this.servants.getProgramNameOfProject(project));
+        this.setConfigs(this.servants.getListConfigOfProject(1, project).getRowElem(), this.cbbConfigs);
+        this.setConfigs(this.servants.getListConfigOfProject(0, project).getRowElem(), this.cbbDefaultConfigs);
     }
 
-    public void setProgram(String string) {
-        this.txtPragram.setText(string);
-    }
 
-    public void setConfigs(List<String> arrayList) {
-        if (arrayList.isEmpty()) {
-            return;
-        }
-        DefaultComboBoxModel<String> cbbConfigModel = (DefaultComboBoxModel<String>) this.cbbConfigs.getModel();
+
+    private void setConfigs(List<String> arrayList, JComboBox comboBox) {
+        DefaultComboBoxModel<String> cbbConfigModel = (DefaultComboBoxModel<String>) comboBox.getModel();
         cbbConfigModel.removeAllElements();
         cbbConfigModel.addAll(arrayList);
-        this.cbbConfigs.setSelectedIndex(0);
-    }
-
-    public void setDefaultConfigs(List<String> arrayList) {
-        if (arrayList.isEmpty()) {
-            return;
+        if (!arrayList.isEmpty()) {
+            comboBox.setSelectedIndex(0);
         }
-        DefaultComboBoxModel<String> cbbConfigModel = (DefaultComboBoxModel<String>) this.cbbDefaultConfigs.getModel();
-        cbbConfigModel.removeAllElements();
-        cbbConfigModel.addAll(arrayList);
-        this.cbbDefaultConfigs.setSelectedIndex(0);
     }
 }

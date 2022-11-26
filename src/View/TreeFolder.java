@@ -7,14 +7,17 @@ package View;
 import Communicate.Cmd.Cmd;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -30,6 +33,7 @@ public class TreeFolder extends javax.swing.JPanel {
     private final DefaultTreeModel treeModel;
     private final JPopupMenu popupMenu;
     private Thread thread;
+    private File dirCurr;
 
     /**
      * Creates new form TreeFolder
@@ -40,6 +44,7 @@ public class TreeFolder extends javax.swing.JPanel {
         this.treeModel = (DefaultTreeModel) this.jTree.getModel();
         this.popupMenu = new JPopupMenu();
         JMenuItem mnItemResfresh = new JMenuItem("Refresh");
+        this.dirCurr = FileSystemView.getFileSystemView().getHomeDirectory();
         mnItemResfresh.addActionListener((ActionEvent e) -> {
             refreshSelectNode();
         });
@@ -207,6 +212,21 @@ public class TreeFolder extends javax.swing.JPanel {
         menu.show(evt.getComponent(), evt.getX(), evt.getY());
     }
 
+    public JFileChooser chosseFileRoot() throws HeadlessException {
+        // TODO add your handling code here:
+        JFileChooser fc = new JFileChooser();
+        fc.setCurrentDirectory(this.dirCurr);
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setDialogTitle("Select folder");
+        int returnVal = fc.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            this.dirCurr = fc.getCurrentDirectory();
+            this.setRoot(fc.getSelectedFile());
+            return fc;
+        }
+        return null;
+    }
+
     public void setRoot(File root) {
         if (root == null || !root.exists()) {
             return;
@@ -274,6 +294,11 @@ public class TreeFolder extends javax.swing.JPanel {
             }
             reloadNode((FileNode) treePath.getLastPathComponent());
         }
+    }
+
+    public void clear() {
+        ((DefaultMutableTreeNode) this.treeModel.getRoot()).removeAllChildren();
+        this.treeModel.reload();
     }
 
 

@@ -1,5 +1,7 @@
 {
     "Version": "1.0.0 - beta",
+    "Temp config": "temp/config",
+    "Temp app": "temp/app",
     "Thread pool": 4,
     "Wait pool": 4,
     "Server port": 6200,
@@ -7,9 +9,11 @@
     "Sql user": "root",
     "Sql pass": "Asd123456",
     "Icon": "config\\Icon\\icon.png",
-    "Program": "App/Program",
+    "Ftp program": "App/Program",
     "Ftp_host": "10.90.100.177",
     "Ftp_port": "21",
     "Ftp_user": "admin",
-    "Ftp_pass": "Foxconn168!!"
+    "Ftp_pass": "Foxconn168!!",
+    "Java": "Start java -jar ",
+    "Other": "Start "
 }

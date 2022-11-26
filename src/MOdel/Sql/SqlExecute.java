@@ -5,14 +5,16 @@
 package MOdel.Sql;
 
 import MOdel.Source.Setting;
-import MOdel.TableParameter;
+import Unicast.commons.Actions.MapRowsParameter;
 import Unicast.commons.Actions.Object.MyName;
+import Unicast.commons.Actions.TableListRowParameter;
 import com.alibaba.fastjson.JSONObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -128,9 +130,9 @@ public class SqlExecute {
         }
     }
 
-    public TableParameter getListPc(String product, String Station, String line) {
+    public TableListRowParameter getListPc(String product, String Station, String line) {
         try ( Connection conn = getConnection()) {
-            TableParameter list = new TableParameter();
+            TableListRowParameter list = new TableListRowParameter();
             ResultSet resultSet = executeQuery(conn,
                     String.format("call getListPc('%s','%s','%s')",
                             product, Station, line));
@@ -189,9 +191,9 @@ public class SqlExecute {
         }
     }
 
-    public TableParameter getProject(String projectName) throws SQLException {
+    public TableListRowParameter getProject(String projectName) throws SQLException {
         try ( Connection conn = getConnection()) {
-            TableParameter programs = new TableParameter();
+            TableListRowParameter programs = new TableListRowParameter();
             ResultSet resultSet = executeQuery(conn,
                     String.format("call getProject('%s')", projectName));
             if (resultSet != null) {
@@ -201,19 +203,22 @@ public class SqlExecute {
         }
     }
 
-    public void addVersionProram(int userID, String projectName, String programName, String version, String detail) throws SQLException {
+    public void addVersionProram(int userID, String projectName, String programName,
+            String version, String detail, String programMd5, String sourceMD5,
+            String programFile, String sourceFile) throws SQLException {
         try ( Connection conn = getConnection()) {
             execute(conn,
-                    String.format("call addVersionProram('%s', '%s', '%s', '%s', '%s')",
-                            userID, projectName, programName, version, detail));
+                    String.format("call addVersionProram('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' , '%s')",
+                            userID, projectName, programName,
+                            version, detail, programMd5, sourceMD5, programFile, sourceFile));
         }
     }
 
-    public void addVersionConfig(int userID, String projectName, String configName, String version, String description) throws SQLException {
+    public void addVersionConfig(int userID, String projectName, String configName, String version, String description, int type, String Md5, String configFile) throws SQLException {
         try ( Connection conn = getConnection()) {
             execute(conn,
-                    String.format("call addVersionConfig('%s', '%s', '%s', '%s', '%s')",
-                            userID, projectName, configName, version, description));
+                    String.format("call addVersionConfig('%s', '%s', '%s', '%s', '%s', %s, '%s', '%s')",
+                            userID, projectName, configName, version, description, type, Md5, configFile));
         }
     }
 
@@ -237,12 +242,12 @@ public class SqlExecute {
         try ( Connection conn = getConnection()) {
             execute(conn,
                     String.format("call mappingProjectWithPC('%s', '%s', '%s', '%s', '%s')",
-                            pcName, project, program, 
+                            pcName, project, program,
                             defaultFolder, folder == null ? defaultFolder : folder));
         }
     }
 
-    public TableParameter findAllVersions(String project) throws SQLException {
+    public TableListRowParameter findAllVersions(String project) throws SQLException {
         try ( Connection conn = getConnection()) {
             ResultSet resultSet = executeQuery(conn,
                     String.format("call findAllVersions('%s')", project));
@@ -264,7 +269,22 @@ public class SqlExecute {
         }
     }
 
-    public TableParameter getListConfigOfProject(int type, String project) throws SQLException {
+    public MapRowsParameter getPackageProgram(String pcName , MapRowsParameter tableParam) throws SQLException {
+        return getPackageProgram(pcName, "all", tableParam);
+    }
+
+    public MapRowsParameter getPackageProgram(String pcName, String project, MapRowsParameter tableParam) throws SQLException {
+        try ( Connection conn = getConnection()) {
+            ResultSet resultSet = executeQuery(conn,
+                    String.format("call getPackageProgram('%s', '%s')", pcName, project));
+            if (resultSet != null) {
+                return getMapParamater(resultSet, tableParam);
+            }
+            return null;
+        }
+    }
+
+    public TableListRowParameter getListConfigOfProject(int type, String project) throws SQLException {
         try ( Connection conn = getConnection()) {
             ResultSet resultSet = executeQuery(conn,
                     String.format("call getListConfigOfProject(%s, '%s')", type, project));
@@ -275,7 +295,7 @@ public class SqlExecute {
         }
     }
 
-    public TableParameter getListPcMappingProject(boolean hasMapping, String projectName, String productItem, String stationItem, String lineItem) throws SQLException {
+    public TableListRowParameter getListPcMappingProject(boolean hasMapping, String projectName, String productItem, String stationItem, String lineItem) throws SQLException {
         try ( Connection conn = getConnection()) {
             ResultSet resultSet = executeQuery(conn,
                     String.format("call getListPcMappingProject(%s,'%s','%s', '%s', '%s')",
@@ -287,13 +307,39 @@ public class SqlExecute {
         }
     }
 
-    private TableParameter getTableParamater(ResultSet resultSet) throws SQLException {
-        TableParameter tableParam = new TableParameter();
+    private TableListRowParameter getTableParamater(ResultSet resultSet) throws SQLException {
+        TableListRowParameter tableParam = new TableListRowParameter();
         var metaData = resultSet.getMetaData();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             tableParam.addColumn(metaData.getColumnLabel(i));
         }
         tableParam.setDataRows(getDataset(resultSet));
+        return tableParam;
+    }
+    
+    private TableListRowParameter getTableParamater(ResultSet resultSet, TableListRowParameter tableParam) throws SQLException {
+        var metaData = resultSet.getMetaData();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            tableParam.addColumn(metaData.getColumnLabel(i));
+        }
+        tableParam.setDataRows(getDataset(resultSet));
+        return tableParam;
+    }
+
+    private MapRowsParameter getMapParamater(ResultSet resultSet, MapRowsParameter tableParam) throws SQLException {
+        var metaData = resultSet.getMetaData();
+        String[] keys = new String[metaData.getColumnCount()];
+        for (int i = 1; i <= keys.length; i++) {
+            keys[i - 1] = metaData.getColumnLabel(i);
+        }
+        HashMap<String, String> row;
+        while (resultSet.next()) {
+            row = new HashMap<>();
+            for (int i = 1; i <= keys.length; i++) {
+                row.put(keys[i - 1], resultSet.getString(i));
+            }
+            tableParam.addRow(row);
+        }
         return tableParam;
     }
 
@@ -314,8 +360,8 @@ public class SqlExecute {
         return rows;
     }
 
-    private TableParameter getListParamater(ResultSet resultSet) throws SQLException {
-        TableParameter tableParam = new TableParameter();
+    private TableListRowParameter getListParamater(ResultSet resultSet) throws SQLException {
+        TableListRowParameter tableParam = new TableListRowParameter();
         var metaData = resultSet.getMetaData();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             tableParam.addColumn(metaData.getColumnLabel(i));

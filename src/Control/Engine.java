@@ -4,11 +4,15 @@
  */
 package Control;
 
-import MOdel.Servants;
 import MOdel.Source.Setting;
 import SystemTray.MySystemTray;
 import View.Display;
 import java.awt.AWTException;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 
 /**
@@ -18,21 +22,23 @@ import java.sql.SQLException;
 public class Engine {
 
     private final Display display;
-    private final Core core;
+    private final ServerRunner runner;
     private final Servants servants;
     private final MySystemTray systemTray;
 
     public Engine() throws SQLException, Exception {
-        Setting setting = Setting.getInstance();
-        this.servants = new Servants(setting);
-        this.display = new Display(setting.getVersion(), servants);
-        this.core = new Core(this.display, servants, setting);
+        this.servants = Servants.getInstance();
+        this.display = new Display();
+        this.runner = new ServerRunner(display);
         this.systemTray = new MySystemTray(display);
-        this.systemTray.initTrayIcon(setting.getIcon(), "Server");
+        this.systemTray.initTrayIcon(Setting.getInstance().getIcon(), "Server");
+        this.systemTray.addMenuItem("Exit", new MenuShortcut(KeyEvent.VK_Q), (ActionEvent e) -> {
+            System.exit(0);
+        });
     }
 
     public void run() throws AWTException {
-        this.core.run();
+        this.runner.run();
         this.display.display();
         this.systemTray.apply();
     }

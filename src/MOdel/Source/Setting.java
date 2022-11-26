@@ -104,8 +104,8 @@ public class Setting {
         return getString(AllKeyword.ICON);
     }
 
-    public String getProgramFolder() {
-        return getString(AllKeyword.PROGRAMS_PATH);
+    public String getFtpProgramFolder() {
+        return getString(AllKeyword.FTP_PROGRAMS_PATH);
     }
 
     public String getFtpHost() {
@@ -122,5 +122,21 @@ public class Setting {
 
     public String getFtpPass() {
         return getString(AllKeyword.FTP.PASS);
+    }
+
+    public String getTempAppFolder() {
+        return getString(AllKeyword.TEMP_APP);
+    }
+    
+    public String getTempConfigFolder() {
+        return getString(AllKeyword.TEMP_CONFIG);
+    }
+
+    public String getJavaRunFile() {
+        return getString(AllKeyword.JAVA_RUN);
+    }
+    
+    public String getOtherRunFile() {
+        return getString(AllKeyword.OTHER_RUN);
     }
 }
